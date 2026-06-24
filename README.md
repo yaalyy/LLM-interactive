@@ -24,5 +24,18 @@ endpoint = None
 ## CMD Demo
 **Run `python main.py`**  
 
+## API Connectivity Check
+After setting `provider`, `ModelSection`, `api_key`, and `endpoint` in [config.py](./config.py "config.py"), run:
+
+```bash
+./run_check_api.sh
+```
+
+Or run the Python file directly:
+
+```bash
+python3 check_api.py
+```
+
 
   
