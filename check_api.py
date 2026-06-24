@@ -27,6 +27,7 @@ def _mask_value(value):
 def _classify_error(error):
     name = type(error).__name__
     message = str(error).strip() or name
+    status_code = getattr(error, "status_code", None)
 
     if name in {"AuthenticationError", "PermissionDeniedError"}:
         return 1, "Authentication failed. Please check api_key.", message
@@ -36,9 +37,22 @@ def _classify_error(error):
         return 2, "API is reachable, but the request was rate-limited or quota-limited.", message
     if name in {"BadRequestError", "NotFoundError", "UnprocessableEntityError"}:
         return 2, "API is reachable, but provider/model/parameter configuration failed.", message
-    if name in {"APIStatusError", "APIError", "InternalServerError"}:
+    if name in {"APIStatusError", "APIError", "InternalServerError"} or status_code:
         return 2, "API returned an error status.", message
     return 3, "Unexpected error while checking API connectivity.", message
+
+
+def _looks_like_error_response(content):
+    lowered = content.lower()
+    error_markers = [
+        "internalservererror",
+        "error code:",
+        "upstream service temporarily unavailable",
+        "upstream_error",
+        "_make_status_error_from_response",
+        "traceback",
+    ]
+    return any(marker in lowered for marker in error_markers)
 
 
 def main():
@@ -77,6 +91,11 @@ def main():
         print(f"Detail: {detail}")
         return exit_code
 
+    if content:
+        if _looks_like_error_response(content):
+            print(_red("❌ API returned error-looking content instead of a valid response."))
+            print(f"Detail: {content[:500]}")
+            return 2
     print(_green("✅ OK - API connectivity check succeeded."))
     if content:
         print(f"Response preview: {content[:120]}")
