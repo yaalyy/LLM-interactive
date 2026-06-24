@@ -1,16 +1,23 @@
-ModelSection = "gpt-3.5-turbo"
-prompt = ""
+provider = "openai"  # openai or anthropic
+ModelSection = "gpt-5.5"
+prompt = "You are a helpful assistant."
 
-api_key = "sk-xxxx"  # !!!!!!! api-key to access OpenAI. DO NOT PUSH ANY KEY HERE ON GIT    !!!!!!!
+api_key = "sk-xxxx"  # !!!!!!! DO NOT PUSH ANY REAL KEY HERE ON GIT !!!!!!!
+endpoint = None  # base URL only; do not include "/v1/messages" or "/chat/completions"
 
-# model parameters below     reference: https://platform.openai.com/docs/api-reference/chat/create
-Temperature = 1  # default to 1
-Top_p = 1  # default to 1
-Stop_sequences = []  # default to empty
-# Max_tokens = 1000   #default to infinite
-Presence_penalty = 0  # default to 0
-Frequency_penalty = 0  # default to 0
+# Optional model parameters. Set a value to override the provider default.
+# Leave as None, or add the parameter name to disabled_parameters, to skip it.
+Temperature = None
+Top_p = None
+Stop_sequences = []
+Max_tokens = None
+Presence_penalty = None
+Frequency_penalty = None
+disabled_parameters = []
+
+# Anthropic Messages API requires max_tokens. This is used when Max_tokens is None.
+anthropic_default_max_tokens = 1024
 
 sensitiveWordList = ["GPT", "ChatGPT", "OpenAI", "模型", "gpt", "chat", "chatgpt"]  # 敏感词设定
 
-log_save_directory = "./logs"  # format:  /path/to/save
+log_save_directory = "./logs"  # format: /path/to/save
